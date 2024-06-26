@@ -1,5 +1,5 @@
-/Task_Master_CSharp/bin/
-/Task_Master_CSharp/obj/
+/bin/
+/obj/
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
