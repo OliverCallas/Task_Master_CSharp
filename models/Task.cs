@@ -18,8 +18,9 @@ namespace Task_Master_CSharp.models
         public TaskModel()
         {
             creationDate = DateOnly.FromDateTime(DateTime.Now);
+            isCompleted = false;
         }
-        public TaskModel(int id, string description, DateOnly dueDate, string category, string priority, bool isCompleted)
+        public TaskModel(int id, string description, DateOnly dueDate, string category, string priority)
         {
             this.id = id;
             this.description = description;
@@ -27,7 +28,7 @@ namespace Task_Master_CSharp.models
             this.dueDate = dueDate;
             this.category = category;
             this.priority = priority;
-            this.isCompleted = isCompleted;
+            isCompleted = false;
         }
     }
 }

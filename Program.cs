@@ -53,7 +53,7 @@ namespace TaskMaster
                         AddTasks();
                         break;
                     case "3":
-                        //EliminarTarea();
+                        ManageTask();
                         break;
                     case "4":
                         //EditarTarea();
@@ -87,7 +87,7 @@ namespace TaskMaster
         {
             Console.WriteLine("Enter id:");
             string? id = Console.ReadLine();
-            if (!ValidateNullAndParse<int>(id, out int parsedInt))
+            if (!ValidateNullAndParse<int>(id, out int parsedId))
             {
                 return;
             }
@@ -97,7 +97,7 @@ namespace TaskMaster
 
             Console.WriteLine("Enter due date (yyyy-mm-dd):");
             string? dueDate = Console.ReadLine();
-            if (!ValidateNullAndParse<DateOnly>(dueDate, out DateOnly parsedDateOnly))
+            if (!ValidateNullAndParse<DateOnly>(dueDate, out DateOnly parsedDueDate))
             {
                 return;
             }
@@ -110,9 +110,9 @@ namespace TaskMaster
 
             TaskModel newTask = new TaskModel
             {
-                id = parsedInt,
+                id = parsedId,
                 description = description,
-                dueDate = parsedDateOnly,
+                dueDate = parsedDueDate,
                 category = category,
                 priority = priority,
                 isCompleted = false
@@ -121,23 +121,99 @@ namespace TaskMaster
             Console.WriteLine("Task added successfully.");
         }
 
+        private static void ManageTask()
+        {
+            Console.WriteLine(printLine);
+            var ListTasks = from task in tasks
+                            orderby task.creationDate ascending
+                            select task;
+            foreach (var task in ListTasks)
+            {
+                Console.WriteLine($"{task.id} - {task.description}");
+            }
+            Console.WriteLine(printLine);
+            Console.WriteLine("Enter task id to manage:");
+            string? id = Console.ReadLine();
+            ValidateNullAndParse<int>(id, out int parsedId);
+            if (!GetTaskById(parsedId))
+            {
+                return;
+            }
+
+            Console.WriteLine("Write: 1 to edit | 2 to delete | 3 to back menu");
+            string? option = Console.ReadLine();
+
+            while (option != "1" && option != "2" && option != "3")
+            {
+                Console.WriteLine("Invalid option. Please try again.");
+                option = Console.ReadLine();
+            }
+
+            switch (option)
+            {
+                case "1":
+                    Console.WriteLine("1 option");
+                    break;
+                case "2":
+                    Console.WriteLine("2 option");
+                    break;
+                case "3":
+                    break;
+            }
+        }
+
+        private static bool GetTaskById(int id)
+        {
+            var Task = from task in tasks
+                       where task.id == id
+                       select task;
+            if (!Task.Any())
+            {
+                Console.WriteLine("Task not found.");
+                return false;
+            }
+            foreach (var task in Task)
+            {
+                Console.WriteLine($"Id: {task.id}");
+                Console.WriteLine($"Description: {task.description}");
+                Console.WriteLine($"Creation: {task.creationDate}");
+                Console.WriteLine($"Expiration: {task.dueDate}");
+                Console.WriteLine($"Category: {task.category}");
+                Console.WriteLine($"Priority: {task.priority}");
+                Console.WriteLine($"State: {task.isCompleted}");
+            }
+            return true;
+        }
+
         private static bool ValidateNullAndParse<T>(string? input, out T parsedValue)
         {
             parsedValue = default!;
-            try
+            if (string.IsNullOrEmpty(input))
             {
-                if (string.IsNullOrEmpty(input))
-                {
-                    return false;
-                }
-                parsedValue = (T)Convert.ChangeType(input, typeof(T));
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
                 return false;
             }
+
+            if (typeof(T) == typeof(DateOnly))
+            {
+                if (DateOnly.TryParse(input, out var dateOnlyValue))
+                {
+                    parsedValue = (T)(object)dateOnlyValue;
+                    return true;
+                }
+                Console.WriteLine("Invalid date format.");
+                return false;
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                if (int.TryParse(input, out var intValue))
+                {
+                    parsedValue = (T)(object)intValue;
+                    return true;
+                }
+                Console.WriteLine("Invalid integer value.");
+                return false;
+            }
+            return false;
         }
     }
 }
