@@ -50,7 +50,7 @@ namespace TaskMaster
                         ListTasks();
                         break;
                     case "2":
-                        //AddTasks();
+                        AddTasks();
                         break;
                     case "3":
                         //EliminarTarea();
@@ -81,6 +81,63 @@ namespace TaskMaster
                 Console.WriteLine($"{task.id} - {task.description} - {task.creationDate} - {task.dueDate} - {task.category} - {task.priority} - {task.isCompleted}");
             }
             Console.WriteLine(printLine);
+        }
+
+        private static void AddTasks()
+        {
+            Console.WriteLine("Enter id:");
+            string? id = Console.ReadLine();
+            if (!ValidateNullAndParse<int>(id, out int parsedInt))
+            {
+                return;
+            }
+
+            Console.WriteLine("Enter task description:");
+            string? description = Console.ReadLine();
+
+            Console.WriteLine("Enter due date (yyyy-mm-dd):");
+            string? dueDate = Console.ReadLine();
+            if (!ValidateNullAndParse<DateOnly>(dueDate, out DateOnly parsedDateOnly))
+            {
+                return;
+            }
+
+            Console.WriteLine("Enter category:");
+            string? category = Console.ReadLine();
+
+            Console.WriteLine("Enter priority:");
+            string? priority = Console.ReadLine();
+
+            TaskModel newTask = new TaskModel
+            {
+                id = parsedInt,
+                description = description,
+                dueDate = parsedDateOnly,
+                category = category,
+                priority = priority,
+                isCompleted = false
+            };
+            tasks.Add(newTask);
+            Console.WriteLine("Task added successfully.");
+        }
+
+        private static bool ValidateNullAndParse<T>(string? input, out T parsedValue)
+        {
+            parsedValue = default!;
+            try
+            {
+                if (string.IsNullOrEmpty(input))
+                {
+                    return false;
+                }
+                parsedValue = (T)Convert.ChangeType(input, typeof(T));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
         }
     }
 }
