@@ -1,13 +1,18 @@
 ﻿using System.Collections;
 using Newtonsoft.Json;
 using Task_Master_CSharp.models;
+using Task_Master_CSharp.persistence;
 
 namespace TaskMaster
 {
     class Program
     {
-        private static string _path = "data/task.json";
-        static List<TaskModel> tasks = new List<TaskModel>();
+        static TaskPersistence persistence = new();
+        private static readonly Lazy<List<TaskModel>> tasksLazyInit = new(() =>
+        {
+            return new List<TaskModel>(persistence.DeserializableJsonFile());
+        });
+        static List<TaskModel> tasks => tasksLazyInit.Value;
         static readonly string[] Options = ["1. See tasks",
                                             "2. Add task",
                                             "3. Manage Task",
@@ -37,7 +42,7 @@ namespace TaskMaster
                 isCompleted = false
             });
 
-            SerializeJsonFile(tasks);
+            persistence.SerializeJsonFile(tasks);
 
             bool exit = false;
             while (!exit)
@@ -214,11 +219,6 @@ namespace TaskMaster
             }
         }
 
-        private static void SerializeJsonFile(List<TaskModel> tasks)
-        {
-            string jsonTasks = JsonConvert.SerializeObject(tasks, Formatting.Indented);
-            File.WriteAllText(_path, jsonTasks);
-        }
         private static bool ValidateNullAndParse<T>(string? input, out T parsedValue)
         {
             parsedValue = default!;
