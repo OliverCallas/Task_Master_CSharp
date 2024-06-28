@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using Newtonsoft.Json;
-using Task_Master_CSharp.models;
+﻿using Task_Master_CSharp.models;
 using Task_Master_CSharp.persistence;
 
 namespace TaskMaster
@@ -22,28 +20,6 @@ namespace TaskMaster
         static readonly string printLine = "----------------------------------------------------------------";
         static void Main(string[] args)
         {
-            //Add task for test
-            tasks.Add(new TaskModel
-            {
-                id = 1,
-                description = "SPRING 1",
-                dueDate = new DateOnly(2024, 6, 30),
-                category = "Academic",
-                priority = "Extrema",
-                isCompleted = false
-            });
-            tasks.Add(new TaskModel
-            {
-                id = 2,
-                description = "SPRING 2",
-                dueDate = new DateOnly(2024, 6, 30),
-                category = "Academic",
-                priority = "Extrema",
-                isCompleted = false
-            });
-
-            persistence.SerializeJsonFile(tasks);
-
             bool exit = false;
             while (!exit)
             {
@@ -127,6 +103,7 @@ namespace TaskMaster
                 isCompleted = false
             };
             tasks.Add(newTask);
+            persistence.SerializeJsonFile(tasks);
             Console.WriteLine("Task added successfully.");
         }
 
