@@ -1,10 +1,12 @@
 ﻿using System.Collections;
+using Newtonsoft.Json;
 using Task_Master_CSharp.models;
 
 namespace TaskMaster
 {
     class Program
     {
+        private static string _path = "data/task.json";
         static List<TaskModel> tasks = new List<TaskModel>();
         static readonly string[] Options = ["1. See tasks",
                                             "2. Add task",
@@ -34,6 +36,8 @@ namespace TaskMaster
                 priority = "Extrema",
                 isCompleted = false
             });
+
+            SerializeJsonFile(tasks);
 
             bool exit = false;
             while (!exit)
@@ -134,8 +138,11 @@ namespace TaskMaster
             Console.WriteLine(printLine);
             Console.WriteLine("Enter task id to manage:");
             string? id = Console.ReadLine();
-            ValidateNullAndParse<int>(id, out int parsedId);
-            if (!GetTaskById(parsedId))
+            if (!ValidateNullAndParse<int>(id, out int parsedId))
+            {
+                return;
+            }
+            if (!GetTask(parsedId))
             {
                 return;
             }
@@ -155,14 +162,14 @@ namespace TaskMaster
                     Console.WriteLine("1 option");
                     break;
                 case "2":
-                    Console.WriteLine("2 option");
+                    DeleteTask(parsedId);
                     break;
                 case "3":
                     break;
             }
         }
 
-        private static bool GetTaskById(int id)
+        private static bool GetTask(int id)
         {
             var Task = from task in tasks
                        where task.id == id
@@ -185,11 +192,39 @@ namespace TaskMaster
             return true;
         }
 
+        private static void DeleteTask(int id)
+        {
+            Console.WriteLine($"Are you sure to deleted Task {id}. (y/n)");
+            string? response = Console.ReadLine();
+            while (response != "y" && response != "n")
+            {
+                Console.WriteLine("Invalid option. Please try again.");
+                response = Console.ReadLine();
+            }
+
+            switch (response)
+            {
+                case "y":
+                    tasks.RemoveAll(task => task.id == id);
+                    Console.WriteLine("Task deleted successfully.");
+                    break;
+                case "n":
+                    Console.WriteLine("Operation cancelled.");
+                    return;
+            }
+        }
+
+        private static void SerializeJsonFile(List<TaskModel> tasks)
+        {
+            string jsonTasks = JsonConvert.SerializeObject(tasks, Formatting.Indented);
+            File.WriteAllText(_path, jsonTasks);
+        }
         private static bool ValidateNullAndParse<T>(string? input, out T parsedValue)
         {
             parsedValue = default!;
             if (string.IsNullOrEmpty(input))
             {
+                Console.WriteLine("Didn't write anything.");
                 return false;
             }
 
@@ -213,7 +248,7 @@ namespace TaskMaster
                 Console.WriteLine("Invalid integer value.");
                 return false;
             }
-            return false;
+            return true;
         }
     }
 }

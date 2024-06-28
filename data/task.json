@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "description": "SPRING 1",
+    "creationDate": "2024-06-27",
+    "dueDate": "2024-06-30",
+    "category": "Academic",
+    "priority": "Extrema",
+    "isCompleted": false
+  },
+  {
+    "id": 2,
+    "description": "SPRING 2",
+    "creationDate": "2024-06-27",
+    "dueDate": "2024-06-30",
+    "category": "Academic",
+    "priority": "Extrema",
+    "isCompleted": false
+  }
+]
