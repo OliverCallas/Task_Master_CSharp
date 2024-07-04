@@ -35,18 +35,15 @@ namespace TaskMaster
                         ListTasks();
                         break;
                     case "2":
-                        AddTasks();
+                        AddTask();
                         break;
                     case "3":
                         ManageTask();
                         break;
                     case "4":
-                        //EditarTarea();
+                        //MarkTaskCompleted();
                         break;
                     case "5":
-                        exit = true;
-                        break;
-                    case "6":
                         exit = true;
                         break;
                     default:
@@ -68,7 +65,7 @@ namespace TaskMaster
             Console.WriteLine(printLine);
         }
 
-        private static void AddTasks()
+        private static void AddTask()
         {
             Console.WriteLine("Enter id:");
             string? id = Console.ReadLine();
@@ -141,7 +138,7 @@ namespace TaskMaster
             switch (option)
             {
                 case "1":
-                    Console.WriteLine("1 option");
+                    EditTask(parsedId);
                     break;
                 case "2":
                     DeleteTask(parsedId);
@@ -174,6 +171,32 @@ namespace TaskMaster
             return true;
         }
 
+        private static void EditTask(int id)
+        {
+            TaskModel? taskEdit = tasks.Find(t => t.id == id);
+            if (taskEdit != null)
+            {
+                throw new Exception("Task not found.");
+            }
+
+            Console.WriteLine("New description");
+            string? newDescription = Console.ReadLine();
+            Console.WriteLine("New due date (yyyy-mm-dd):");
+            string? newDueDate = Console.ReadLine();
+            if (!ValidateNullAndParse<DateOnly>(newDueDate, out DateOnly parsedNewDueDate))
+            {
+                return;
+            }
+            Console.WriteLine("New category:");
+            string? newCategory = Console.ReadLine();
+            Console.WriteLine("New priority:");
+            string? newPriority = Console.ReadLine();
+
+            taskEdit.description = newDescription;
+            taskEdit.dueDate = parsedNewDueDate;
+            taskEdit.category = newCategory;
+            taskEdit.priority = newPriority;
+        }
         private static void DeleteTask(int id)
         {
             Console.WriteLine($"Are you sure to deleted Task {id}. (y/n)");
@@ -188,6 +211,7 @@ namespace TaskMaster
             {
                 case "y":
                     tasks.RemoveAll(task => task.id == id);
+                    persistence.SerializeJsonFile(tasks);
                     Console.WriteLine("Task deleted successfully.");
                     break;
                 case "n":
