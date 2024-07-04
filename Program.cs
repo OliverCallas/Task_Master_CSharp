@@ -174,7 +174,7 @@ namespace TaskMaster
         private static void EditTask(int id)
         {
             TaskModel? taskEdit = tasks.Find(t => t.id == id);
-            if (taskEdit != null)
+            if (taskEdit == null)
             {
                 throw new Exception("Task not found.");
             }
